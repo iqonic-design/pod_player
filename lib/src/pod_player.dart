@@ -44,6 +44,7 @@ class PodVideoPlayer extends StatefulWidget {
   final Widget? videoTitle;
   final Color? backgroundColor;
   final DecorationImage? videoThumbnail;
+  final bool hideFullScreenButton;
 
   /// Optional callback, fired when full screen mode toggles.
   ///
@@ -72,6 +73,7 @@ class PodVideoPlayer extends StatefulWidget {
     this.videoThumbnail,
     this.onToggleFullScreen,
     this.onLoading,
+    this.hideFullScreenButton = false,
   }) {
     addToUiController();
   }
@@ -91,14 +93,16 @@ class PodVideoPlayer extends StatefulWidget {
       ..onToggleFullScreen = onToggleFullScreen
       ..onLoading = onLoading
       ..videoThumbnail = videoThumbnail
-      ..showMenu = controller.showMoreIcon;
+      ..showMenu = controller.showMoreIcon
+      ..hideFullScreenButton = hideFullScreenButton;
   }
 
   @override
   State<PodVideoPlayer> createState() => _PodVideoPlayerState();
 }
 
-class _PodVideoPlayerState extends State<PodVideoPlayer> with TickerProviderStateMixin {
+class _PodVideoPlayerState extends State<PodVideoPlayer>
+    with TickerProviderStateMixin {
   late PodGetXVideoController _podCtr;
 
   // late String tag;
@@ -181,7 +185,9 @@ class _PodVideoPlayerState extends State<PodVideoPlayer> with TickerProviderStat
     return GetBuilder<PodGetXVideoController>(
       tag: widget.controller.getTag,
       builder: (_) {
-        _frameAspectRatio = widget.matchFrameAspectRatioToVideo ? _podCtr.videoCtr?.value.aspectRatio ?? widget.frameAspectRatio : widget.frameAspectRatio;
+        _frameAspectRatio = widget.matchFrameAspectRatioToVideo
+            ? _podCtr.videoCtr?.value.aspectRatio ?? widget.frameAspectRatio
+            : widget.frameAspectRatio;
         return Center(
           child: ColoredBox(
             color: widget.backgroundColor ?? Colors.black,
@@ -196,7 +202,9 @@ class _PodVideoPlayerState extends State<PodVideoPlayer> with TickerProviderStat
 
                 return AspectRatio(
                   aspectRatio: _frameAspectRatio,
-                  child: podCtr.videoCtr?.value.isInitialized ?? false ? _buildPlayer(showMenu: widget.controller.showMoreIcon) : Center(child: circularProgressIndicator),
+                  child: podCtr.videoCtr?.value.isInitialized ?? false
+                      ? _buildPlayer(showMenu: widget.controller.showMoreIcon)
+                      : Center(child: circularProgressIndicator),
                 );
               },
             ),
@@ -239,7 +247,9 @@ class _PodVideoPlayerState extends State<PodVideoPlayer> with TickerProviderStat
   }
 
   Widget _buildPlayer({bool showMenu = true}) {
-    final videoAspectRatio = widget.matchVideoAspectRatioToFrame ? _podCtr.videoCtr?.value.aspectRatio ?? widget.videoAspectRatio : widget.videoAspectRatio;
+    final videoAspectRatio = widget.matchVideoAspectRatioToFrame
+        ? _podCtr.videoCtr?.value.aspectRatio ?? widget.videoAspectRatio
+        : widget.videoAspectRatio;
     if (kIsWeb) {
       return GetBuilder<PodGetXVideoController>(
         tag: widget.controller.getTag,

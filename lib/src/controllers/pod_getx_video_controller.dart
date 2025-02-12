@@ -1,3 +1,5 @@
+// ignore_for_file: require_trailing_commas
+
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
@@ -43,6 +45,8 @@ class PodGetXVideoController extends _PodGesturesController {
   bool controllerInitialized = false;
 
   bool showMenu = true;
+
+  bool hideFullScreenButton = true;
 
   late PodPlayerConfig podPlayerConfig;
   late PlayVideoFrom playVideoFrom;
@@ -100,7 +104,6 @@ class PodGetXVideoController extends _PodGesturesController {
           httpHeaders: playVideoFrom.httpHeaders,
         );
         playingVideoUrl = playVideoFrom.dataSource;
-        break;
       case PodVideoPlayerType.networkQualityUrls:
         final url = await getUrlFromVideoQualityUrls(
           qualityList: podPlayerConfig.videoQualityPriority,
@@ -117,7 +120,6 @@ class PodGetXVideoController extends _PodGesturesController {
         );
         playingVideoUrl = url;
 
-        break;
       case PodVideoPlayerType.youtube:
         final urls = await getVideoQualityUrlsFromYoutube(
           playVideoFrom.dataSource!,
@@ -138,7 +140,6 @@ class PodGetXVideoController extends _PodGesturesController {
         );
         playingVideoUrl = url;
 
-        break;
       case PodVideoPlayerType.vimeo:
         await getQualityUrlsFromVimeoId(
           playVideoFrom.dataSource!,
@@ -158,7 +159,6 @@ class PodGetXVideoController extends _PodGesturesController {
         );
         playingVideoUrl = url;
 
-        break;
       case PodVideoPlayerType.asset:
 
         ///
@@ -170,7 +170,6 @@ class PodGetXVideoController extends _PodGesturesController {
         );
         playingVideoUrl = playVideoFrom.dataSource;
 
-        break;
       case PodVideoPlayerType.file:
         if (kIsWeb) {
           throw Exception('file doesnt support web');
@@ -183,7 +182,6 @@ class PodGetXVideoController extends _PodGesturesController {
           videoPlayerOptions: playVideoFrom.videoPlayerOptions,
         );
 
-        break;
       case PodVideoPlayerType.vimeoPrivateVideos:
         await getQualityUrlsFromVimeoPrivateId(
           playVideoFrom.dataSource!,
@@ -202,38 +200,36 @@ class PodGetXVideoController extends _PodGesturesController {
           httpHeaders: playVideoFrom.httpHeaders,
         );
         playingVideoUrl = url;
-
-        break;
     }
   }
 
   ///Listning on keyboard events
   void onKeyBoardEvents({
-    required RawKeyEvent event,
+    required KeyEvent event,
     required BuildContext appContext,
     required String tag,
   }) {
     if (kIsWeb) {
-      if (event.isKeyPressed(LogicalKeyboardKey.space)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.space)) {
         togglePlayPauseVideo();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.keyM)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.keyM)) {
         toggleMute();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.arrowLeft)) {
         onLeftDoubleTap();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.arrowRight)) {
         onRightDoubleTap();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.keyF) && event.logicalKey.keyLabel == 'F') {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.keyF) && event.logicalKey.keyLabel == 'F') {
         toggleFullScreenOnWeb(appContext, tag);
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.escape)) {
         if (isFullScreen) {
           uni_html.document.exitFullscreen();
           if (!isWebPopupOverlayOpen) {
@@ -243,6 +239,30 @@ class PodGetXVideoController extends _PodGesturesController {
       }
 
       return;
+    } else {
+      if (event is KeyDownEvent) {
+        switch (event.logicalKey) {
+          case LogicalKeyboardKey.select:
+            togglePlayPauseVideo();
+            return;
+          case LogicalKeyboardKey.arrowLeft:
+            seekBackward(Duration(seconds: _videoCtr!.value.position.inSeconds >= 5 ? 5 : _videoCtr!.value.position.inSeconds));
+            return;
+          case LogicalKeyboardKey.arrowRight:
+            seekForward(Duration(seconds: ((_videoCtr!.value.position.inSeconds + 5) > videoDuration.inSeconds) ? videoDuration.inSeconds : 5));
+            return;
+        }
+      }
+      if (event is KeyRepeatEvent) {
+        switch (event.logicalKey) {
+          case LogicalKeyboardKey.arrowLeft:
+            onLeftDoubleTap();
+            return;
+          case LogicalKeyboardKey.arrowRight:
+            onRightDoubleTap();
+            return;
+        }
+      }
     }
   }
 
@@ -254,7 +274,7 @@ class PodGetXVideoController extends _PodGesturesController {
       }
     } else {
       uni_html.document.documentElement?.requestFullscreen();
-      enableFullScreen(tag,showMenu: showMenu);
+      enableFullScreen(tag, showMenu: showMenu);
     }
   }
 
@@ -265,18 +285,14 @@ class PodGetXVideoController extends _PodGesturesController {
       case PodVideoState.playing:
         if (podPlayerConfig.wakelockEnabled) WakelockPlus.enable();
         playVideo(true);
-        break;
       case PodVideoState.paused:
         if (podPlayerConfig.wakelockEnabled) WakelockPlus.disable();
         playVideo(false);
-        break;
       case PodVideoState.loading:
         isShowOverlay(true);
-        break;
       case PodVideoState.error:
         if (podPlayerConfig.wakelockEnabled) WakelockPlus.disable();
         playVideo(false);
-        break;
     }
   }
 
