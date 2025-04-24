@@ -86,20 +86,6 @@ class _MobileOverlay extends StatelessWidget {
   }
 
   bool _isRtl() {
-    final Locale locale = WidgetsBinding.instance.platformDispatcher.locale;
-    final langs = [
-      'ar', // Arabic
-      'fa', // Farsi
-      'he', // Hebrew
-      'ps', // Pashto
-      'ur', // Urdu
-    ];
-    for (int i = 0; i < langs.length; i++) {
-      final lang = langs[i];
-      if (locale.toString().contains(lang)) {
-        return true;
-      }
-    }
     return false;
   }
 

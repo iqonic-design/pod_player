@@ -246,21 +246,27 @@ class _PodVideoPlayerState extends State<PodVideoPlayer> with TickerProviderStat
         id: 'full-screen',
         builder: (podCtr) {
           if (podCtr.isFullScreen) return _thumbnailAndLoadingWidget();
-          return _PodCoreVideoPlayer(
+          return Directionality(
+            textDirection: TextDirection.ltr,
+            child: _PodCoreVideoPlayer(
             videoPlayerCtr: podCtr.videoCtr!,
             videoAspectRatio: videoAspectRatio,
             tag: widget.controller.getTag,
             showMenu: showMenu,
-          );
+          ),
+        );
         },
       );
     } else {
-      return _PodCoreVideoPlayer(
+      return Directionality(
+        textDirection: TextDirection.ltr,
+        child: _PodCoreVideoPlayer(
         videoPlayerCtr: _podCtr.videoCtr!,
         videoAspectRatio: videoAspectRatio,
         tag: widget.controller.getTag,
         showMenu: showMenu,
-      );
+      ),
+     );
     }
   }
 }

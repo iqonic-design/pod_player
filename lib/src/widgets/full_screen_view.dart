@@ -66,12 +66,15 @@ class _FullScreenViewState extends State<FullScreenView> with TickerProviderStat
                   child: podCtr.videoCtr == null
                       ? loadingWidget
                       : podCtr.videoCtr!.value.isInitialized
-                          ? _PodCoreVideoPlayer(
+                          ? Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: _PodCoreVideoPlayer(
                               tag: widget.tag,
                               videoPlayerCtr: podCtr.videoCtr!,
                               videoAspectRatio: podCtr.videoCtr?.value.aspectRatio ?? 16 / 9,
                               showMenu: podCtr.showMenu,
-                            )
+                            ),
+                          )
                           : loadingWidget,
                 ),
               ),
