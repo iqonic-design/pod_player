@@ -25,9 +25,9 @@ class VideoApis {
   }
 
   static Future<List<VideoQalityUrls>?> getVimeoVideoQualityUrls(
-      String videoId,
-      String? hash,
-      ) async {
+    String videoId,
+    String? hash,
+  ) async {
     try {
       final response = await _makeRequestHash(videoId, hash);
       final jsonData = jsonDecode(response.body)['request']['files'];
@@ -81,9 +81,9 @@ class VideoApis {
   }
 
   static Future<List<VideoQalityUrls>?> getVimeoPrivateVideoQualityUrls(
-      String videoId,
-      Map<String, String> httpHeader,
-      ) async {
+    String videoId,
+    Map<String, String> httpHeader,
+  ) async {
     try {
       final response = await http.get(
         Uri.parse('https://api.vimeo.com/videos/$videoId'),
@@ -121,9 +121,9 @@ class VideoApis {
   }
 
   static Future<List<VideoQalityUrls>?> getYoutubeVideoQualityUrls(
-      String youtubeIdOrUrl,
-      bool live,
-      ) async {
+    String youtubeIdOrUrl,
+    bool live,
+  ) async {
     try {
       final yt = YoutubeExplode();
       final urls = <VideoQalityUrls>[];
@@ -139,10 +139,10 @@ class VideoApis {
         );
       } else {
         final manifest =
-        await yt.videos.streamsClient.getManifest(youtubeIdOrUrl);
+            await yt.videos.streamsClient.getManifest(youtubeIdOrUrl);
         urls.addAll(
           manifest.muxed.map(
-                (element) => VideoQalityUrls(
+            (element) => VideoQalityUrls(
               quality: int.parse(element.qualityLabel.split('p')[0]),
               url: element.url.toString(),
             ),
